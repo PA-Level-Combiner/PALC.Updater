@@ -21,10 +21,39 @@ public partial class MainV : Window
         vm = new();
         DataContext = vm;
 
-        vm.LoadReleaseFailed += OnLoadReleaseFailed;
+        vm.LoadExistingFailed += OnLoadExistingFailed;
 
         vm.LaunchFailed += OnLaunchFailed;
         vm.Launched += OnProgramLaunched;
+
+        vm.LoadGithubFailed += OnLoadGithubFailed;
+    }
+
+
+    public async void OnLoaded(object? sender, RoutedEventArgs e)
+    {
+        await RefreshVersionList();
+
+        await vm.LoadGithubReleases();
+        if (!vm.isGithubReleasesLoaded) return;
+
+        if (vm.HasNewUpdates())
+        {
+            await MessageBoxManager.GetMessageBoxStandard(
+                "New update!",
+                $"A new update has been released:\n" +
+                $"{vm.GetHighestGithubRelease()?.ReleaseVersion?.ToString() ?? "wut unknown version"}\n" +
+                $"Use the download button to download this update."
+            ).ShowWindowDialogAsync(this);
+        }
+    }
+
+    private async Task OnLoadGithubFailed(object? sender, Exception e)
+    {
+        await MessageBoxTools.CreateErrorMsgBox(
+            $"An error occurred while trying to get releases from Github.",
+            e
+        ).ShowWindowDialogAsync(this);
     }
 
 
@@ -45,7 +74,7 @@ public partial class MainV : Window
 
 
 
-    private async Task OnLoadReleaseFailed(object? sender, LoadReleaseFailedArgs e)
+    private async Task OnLoadExistingFailed(object? sender, LoadReleaseFailedArgs e)
     {
         await MessageBoxTools.CreateErrorMsgBox(
             $"An error occured while trying to open the release in folder {e.path}.",
@@ -53,8 +82,6 @@ public partial class MainV : Window
         ).ShowWindowDialogAsync(this);
     }
 
-    public async void OnLoaded(object? sender, RoutedEventArgs e)
-        => await RefreshVersionList();
 
 
     public async void OnDelete(object? sender, RoutedEventArgs e)
@@ -71,6 +98,8 @@ public partial class MainV : Window
 
         if (result == MsBox.Avalonia.Enums.ButtonResult.Yes) vm.Delete(existingVersionsVM);
     }
+
+
 
 
     public async void OnRefresh(object? sender, RoutedEventArgs e)
@@ -95,8 +124,10 @@ public partial class MainV : Window
 
     public async void OnDownloadVersions(object? sender, RoutedEventArgs e)
     {
-        DownloaderV downloaderV = new(new() { mainVM = vm });
+        DownloaderVM downloaderVM = new() { mainVM = vm };
+        downloaderVM.PopulateGithubReleases(vm.GithubReleases);
+
+        DownloaderV downloaderV = new(downloaderVM);
         await downloaderV.ShowDialog(this);
-        await RefreshVersionList();
     }
 }

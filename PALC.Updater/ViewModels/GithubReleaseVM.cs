@@ -7,6 +7,8 @@ using Semver;
 using System.Net.Http;
 using System.IO;
 using System.IO.Compression;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
 
 namespace PALC.Updater.ViewModels;
 

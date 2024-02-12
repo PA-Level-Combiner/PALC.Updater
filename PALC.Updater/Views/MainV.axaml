@@ -82,6 +82,7 @@
 		<Grid Grid.Row="4"
 			  ColumnDefinitions="2*, *">
 			<Button Grid.Column="0"
+					IsEnabled="{Binding IsGithubReleasesLoaded, Mode=TwoWay}"
 					Classes="primary"
 					Content="Download Versions"
 					Click="OnDownloadVersions"/>

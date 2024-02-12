@@ -27,78 +27,15 @@ public partial class DownloaderVM : ViewModelBase
 
     public ObservableCollection<GithubReleaseVM> GithubReleases { get; } = [];
 
-
-    public event AsyncEventHandler<Exception>? GetReleasesFromRepoFailed;
-    public event AsyncEventHandler<Exception>? StringToSemverFailed;
-
-    public event AsyncEventHandler? LoadReleasesfinished;
-
-    private static ObservableCollection<GithubReleaseVM>? _githubReleasesCache = null;
-    public async Task LoadReleases()
+    public void PopulateGithubReleases(IEnumerable<GithubReleaseVM> githubReleases)
     {
-        if (_githubReleasesCache != null)
+        List<GithubReleaseVM> copy = githubReleases.ToList();
+        foreach (var githubRelease in copy)
         {
-            foreach (var item in _githubReleasesCache)
-                GithubReleases.Add(item);
-
-            return;
+            githubRelease.DownloadFinished += OnDownloadFinished;
+            githubRelease.DownloadFailed += OnDownloadFailed;
+            GithubReleases.Add(githubRelease);
         }
-
-
-        GithubReleases.Clear();
-
-        try
-        {
-            IReadOnlyList<Release> releases;
-            try
-            {
-                releases = await Globals.client.Repository.Release.GetAll(GithubInfo.owner, GithubInfo.mainName);
-            }
-            catch (Exception ex)
-            {
-                if (GetReleasesFromRepoFailed != null)
-                    await GetReleasesFromRepoFailed(this, ex);
-
-                return;
-            }
-
-            foreach (var release in releases)
-            {
-                SemVersion? version;
-                try
-                {
-                    version = SemVersion.Parse(release.TagName, SemVersionStyles.Any);
-                }
-                catch (Exception ex)
-                {
-                    if (StringToSemverFailed != null)
-                        await StringToSemverFailed(this, ex);
-
-                    version = null;
-                }
-
-
-                GithubReleaseVM githubRelease = new()
-                {
-                    githubRelease = release,
-                    Name = release.Name,
-                    ReleaseNotes = release.Body,
-                    Url = release.Url,
-                    CreatedAt = release.CreatedAt.UtcDateTime,
-                    ReleaseVersion = version
-                };
-                githubRelease.DownloadFailed += OnDownloadFailed;
-                githubRelease.DownloadFinished += OnDownloadFinished;
-
-                GithubReleases.Add(githubRelease);
-            }
-        }
-        finally
-        {
-            if (LoadReleasesfinished != null) await LoadReleasesfinished(this, new EventArgs());
-        }
-
-        _githubReleasesCache = GithubReleases;
     }
 
     public event AsyncEventHandler<object?>? DownloadFinished;

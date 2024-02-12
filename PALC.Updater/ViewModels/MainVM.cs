@@ -1,5 +1,8 @@
-﻿using Semver;
+﻿using CommunityToolkit.Mvvm.ComponentModel;
+using Octokit;
+using Semver;
 using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
@@ -19,7 +22,7 @@ public partial class MainVM : ViewModelBase
         public required Exception ex;
         public required string path;
     }
-    public event AsyncEventHandler<LoadReleaseFailedArgs>? LoadReleaseFailed;
+    public event AsyncEventHandler<LoadReleaseFailedArgs>? LoadExistingFailed;
 
     public async Task LoadExistingReleases()
     {
@@ -36,8 +39,8 @@ public partial class MainVM : ViewModelBase
         {
             if (!File.Exists(Path.Join(directory, Globals.exeName)))
             {
-                if (LoadReleaseFailed != null)
-                    await LoadReleaseFailed(this, new LoadReleaseFailedArgs { ex = new Exception($"{Globals.exeName} is missing."), path = directory });
+                if (LoadExistingFailed != null)
+                    await LoadExistingFailed(this, new LoadReleaseFailedArgs { ex = new Exception($"{Globals.exeName} is missing."), path = directory });
 
                 continue;
             }
@@ -50,8 +53,8 @@ public partial class MainVM : ViewModelBase
             }
             catch (FormatException ex)
             {
-                if (LoadReleaseFailed != null)
-                    await LoadReleaseFailed(this, new LoadReleaseFailedArgs {
+                if (LoadExistingFailed != null)
+                    await LoadExistingFailed(this, new LoadReleaseFailedArgs {
                         ex = new Exception(
                             $"Can't deduce version from folder name. " +
                             $"Please use a valid semantic version as the folder name if you're manually installing.\n" +
@@ -86,11 +89,81 @@ public partial class MainVM : ViewModelBase
     }
 
 
-    public async Task CheckNewUpdates()
+
+    public event AsyncEventHandler<Exception>? LoadGithubFailed;
+    public event AsyncEventHandler? LoadGithubFinished;
+
+    [ObservableProperty]
+    public bool isGithubReleasesLoaded = false;
+
+    public ObservableCollection<GithubReleaseVM> GithubReleases { get; } = [];
+    public async Task LoadGithubReleases()
     {
-        var existingHighest = ExistingVersions.MaxBy(x => x.ReleaseVersion ?? new SemVersion(0, 0, 0));
+        if (isGithubReleasesLoaded) return;
+
+        try
+        {
+            IReadOnlyList<Release> releases;
+            try
+            {
+                releases = await Globals.client.Repository.Release.GetAll(GithubInfo.owner, GithubInfo.mainName);
+            }
+            catch (Exception ex)
+            {
+                if (LoadGithubFailed != null)
+                    await LoadGithubFailed(this, ex);
+
+                return;
+            }
+
+            foreach (var release in releases)
+            {
+                SemVersion? version;
+                try
+                {
+                    version = SemVersion.Parse(release.TagName, SemVersionStyles.Any);
+                }
+                catch
+                {
+                    version = null;
+                }
 
 
+                GithubReleaseVM githubRelease = new()
+                {
+                    githubRelease = release,
+                    Name = release.Name,
+                    ReleaseNotes = release.Body,
+                    Url = release.Url,
+                    CreatedAt = release.CreatedAt.UtcDateTime,
+                    ReleaseVersion = version
+                };
+
+                GithubReleases.Add(githubRelease);
+            }
+        }
+        finally
+        {
+            if (LoadGithubFinished != null) await LoadGithubFinished(this, new EventArgs());
+        }
+
+        IsGithubReleasesLoaded = true;
+    }
+
+
+    public GithubReleaseVM? GetHighestGithubRelease()
+    {
+        return GithubReleases.MaxBy(x => x.ReleaseVersion ?? new SemVersion(0, 0, 0));
+    }
+
+    public bool HasNewUpdates()
+    {
+        if (!IsGithubReleasesLoaded) throw new Exception("Github releases have not been loaded yet.");
+
+        var existingHighest = ExistingVersions.Select(x => x.ReleaseVersion).MaxBy(x => x ?? new SemVersion(0, 0, 0));
+        var githubHighest = GithubReleases.Select(x => x.ReleaseVersion).MaxBy(x => x ?? new SemVersion(0, 0, 0));
+
+        return githubHighest?.CompareSortOrderTo(existingHighest) == 1;
     }
 
 

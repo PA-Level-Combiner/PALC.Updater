@@ -21,40 +21,12 @@ public partial class DownloaderV : Window
         this.vm = vm;
         DataContext = vm;
 
-        vm.GetReleasesFromRepoFailed += OnGetReleasesFromRepoFailed;
-
         vm.DownloadFinished += OnDownloadFinished;
         vm.DownloadFailed += OnDownloadFailed;
     }
-
-
-    private async Task OnGetReleasesFromRepoFailed(object? sender, System.Exception e)
-    {
-        await MessageBoxTools.CreateErrorMsgBox(
-            "An error occurred while trying to get releases. If this is a rate-limit issue, just wait 10 or so minutes.",
-            e
-        ).ShowWindowDialogAsync(this);
-    }
-
     public DownloaderV() : this(new()) { }
 
 
-    public async void OnLoaded(object? sender, RoutedEventArgs e)
-        => await Refresh();
-
-
-    public async Task Refresh()
-    {
-        Window display = new() { Content = "Refreshing online version list...", SizeToContent = SizeToContent.WidthAndHeight };
-
-        display.Show();
-        IsEnabled = false;
-
-        await vm.LoadReleases();
-
-        IsEnabled = true;
-        display.Close();
-    }
 
     public async void OnClose(object? sender, RoutedEventArgs e)
         => await Dispatcher.UIThread.InvokeAsync(Close);

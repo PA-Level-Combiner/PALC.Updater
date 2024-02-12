@@ -13,9 +13,7 @@
 		x:DataType="vm:DownloaderVM"
 
         Title="Download Versions?"
-		Width="480" Height="640"
-		
-		Loaded="OnLoaded">
+		Width="480" Height="640">
 
 	<Design.DataContext>
 		<vm:DownloaderVMDesign/>
