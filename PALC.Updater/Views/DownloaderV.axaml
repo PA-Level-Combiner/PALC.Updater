@@ -3,21 +3,55 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         mc:Ignorable="d"
+		
+		xmlns:md="https://github.com/whistyun/Markdown.Avalonia"
 
         xmlns:v="using:PALC.Updater.Views"
 		xmlns:vm="using:PALC.Updater.ViewModels"
 
         x:Class="PALC.Updater.Views.DownloaderV"
+		x:DataType="vm:DownloaderVM"
 
         Title="Download Versions?"
 		Width="480" Height="640">
+
+	<Design.DataContext>
+		<vm:DownloaderVMDesign/>
+	</Design.DataContext>
 
 	<Grid RowDefinitions="*, 5*, *">
 		<TextBlock Grid.Row="0"
 				   Classes="h1"
 				   Text="DOWNLOAD NEW VERSIONS"/>
 
-		<ListBox Grid.Row="1"></ListBox>
+		<ScrollViewer Grid.Row="1"
+					  VerticalScrollBarVisibility="Visible">
+			<ListBox SelectionMode="Single"
+					 ItemsSource="{Binding GithubReleases}">
+				<ListBox.ItemTemplate>
+					<DataTemplate DataType="{x:Type vm:GithubReleaseVM}">
+						<Expander>
+							<Expander.Header>
+								<TextBlock TextAlignment="Left"
+										   Text="{Binding ReleaseVersion}"/>
+							</Expander.Header>
+
+							<Expander.Content>
+								<Grid RowDefinitions="Auto, 0.5*">
+									<Border BorderThickness="2"
+											BorderBrush="Black">
+										<md:MarkdownScrollViewer Grid.Row="0"
+																 Markdown="{Binding ReleaseNotes}" />
+										
+									</Border>
+								</Grid>
+							</Expander.Content>
+						</Expander>
+					</DataTemplate>
+				</ListBox.ItemTemplate>
+			</ListBox>
+
+		</ScrollViewer>
 
 		<Grid Grid.Row="2"
 			  ColumnDefinitions="*, *">
