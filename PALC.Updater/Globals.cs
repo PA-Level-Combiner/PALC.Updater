@@ -8,6 +8,10 @@ namespace PALC.Updater;
 
 public static class Globals
 {
+    public static readonly string userAgent = "PALC-Updater";
+
     public static readonly string versionsFolder = "PALCVersions";
-    public static readonly string exeName = "placeholder.exe";
+    public static readonly string exeName = "PALC.Main.Desktop.exe";
+
+    public static readonly string releaseFileToDownload = "PALC.Desktop.zip";
 }

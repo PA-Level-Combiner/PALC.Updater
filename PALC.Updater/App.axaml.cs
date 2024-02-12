@@ -5,6 +5,9 @@ using Avalonia.Markup.Xaml;
 
 using PALC.Updater.ViewModels;
 using PALC.Updater.Views;
+using System;
+using System.Runtime.ExceptionServices;
+using System.Threading.Tasks;
 
 namespace PALC.Updater;
 
@@ -12,7 +15,13 @@ public partial class App : Application
 {
     public override void Initialize()
     {
+        TaskScheduler.UnobservedTaskException += OnUnobservedTaskException;
         AvaloniaXamlLoader.Load(this);
+    }
+
+    private void OnUnobservedTaskException(object? sender, UnobservedTaskExceptionEventArgs e)
+    {
+        ExceptionDispatchInfo.Capture(e.Exception?.InnerException ?? e.Exception ?? new Exception("wut")).Throw();
     }
 
     public override void OnFrameworkInitializationCompleted()

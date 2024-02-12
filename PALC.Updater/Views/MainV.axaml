@@ -8,9 +8,17 @@
 		xmlns:vm="using:PALC.Updater.ViewModels"
 
         x:Class="PALC.Updater.Views.MainV"
+		x:DataType="vm:MainVM"
+		x:Name="Window"
 
         Title="PALC Updater"
-		Width="480" Height="640">
+		Width="480" Height="640"
+		
+		Loaded="OnLoaded">
+
+	<Design.DataContext>
+		<vm:MainVMDesign />
+	</Design.DataContext>
 
 	<Grid RowDefinitions="*, Auto, 4*, Auto, 0.75*">
 		<Grid Grid.Row="0"
@@ -27,8 +35,44 @@
 		
 		<Separator Grid.Row="1"/>
 
+
+		<ScrollViewer Grid.Row="2"
+					  VerticalScrollBarVisibility="Visible">
+			<ListBox ItemsSource="{Binding ExistingVersions}">
+				<ListBox.ItemTemplate>
+					<DataTemplate DataType="{x:Type vm:ExistingVersionVM}">
+						<Expander>
+							<Expander.Header>
+								<TextBlock TextAlignment="Left"
+										   Text="{Binding ReleaseVersion, TargetNullValue=Unknown Version}" />
+							</Expander.Header>
+
+							<Expander.Content>
+								<Grid RowDefinitions="*, 2*">
+									<TextBlock Grid.Row="0"
+											   Classes="caption"
+											   Text="{Binding FolderPath}"/>
+
+									<Grid Grid.Row="1"
+										  ColumnDefinitions="*, 2*">
+										<Button Grid.Column="0"
+												Classes="secondary"
+												Content="Delete"
+												Click="OnDelete"/>
+										<Button Grid.Column="1"
+												Classes="primary"
+												Content="Launch"
+												Command="{Binding LaunchCommand}"/>
+									</Grid>
+								</Grid>
+							</Expander.Content>
+
+						</Expander>
+					</DataTemplate>
+				</ListBox.ItemTemplate>
+			</ListBox>
+		</ScrollViewer>
 		
-		<ListBox Grid.Row="2"/>
 		
 		
 		<Separator Grid.Row="3"/>
@@ -36,14 +80,16 @@
 
 
 		<Grid Grid.Row="4"
-			  ColumnDefinitions="*, *">
+			  ColumnDefinitions="2*, *">
 			<Button Grid.Column="0"
 					Classes="primary"
-					Content="Run Selected Version"/>
-			
+					Content="Download Versions"
+					Click="OnDownloadVersions"/>
+
 			<Button Grid.Column="1"
 					Classes="secondary"
-					Content="Check For Updates"/>
+					Content="Refresh"
+					Click="OnRefresh"/>
 		</Grid>
 	</Grid>
 </Window>

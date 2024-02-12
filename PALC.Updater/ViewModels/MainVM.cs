@@ -13,10 +13,17 @@ public partial class MainVM : ViewModelBase
     public ObservableCollection<ExistingVersionVM> ExistingVersions { get; } = [];
 
 
-    public event AsyncEventHandler<Exception>? LoadExistingReleasesFailed;
+    public class LoadReleaseFailedArgs
+    {
+        public required Exception ex;
+        public required string path;
+    }
+    public event AsyncEventHandler<LoadReleaseFailedArgs>? LoadReleaseFailed;
 
     public async Task LoadExistingReleases()
     {
+        ExistingVersions.Clear();
+
         if (!Directory.Exists(Globals.versionsFolder))
         {
             Directory.CreateDirectory(Globals.versionsFolder);
@@ -28,13 +35,13 @@ public partial class MainVM : ViewModelBase
         {
             if (!File.Exists(Path.Join(directory, Globals.exeName)))
             {
-                if (LoadExistingReleasesFailed != null)
-                    await LoadExistingReleasesFailed(this, new Exception($"The .exe for path {directory} is missing."));
+                if (LoadReleaseFailed != null)
+                    await LoadReleaseFailed(this, new LoadReleaseFailedArgs { ex = new Exception($"{Globals.exeName} is missing."), path = directory });
 
                 continue;
             }
 
-            var folderName = Path.GetFileName(Path.GetDirectoryName(directory));
+            var folderName = Path.GetFileName(directory);
             SemVersion? version;
             try
             {
@@ -42,13 +49,54 @@ public partial class MainVM : ViewModelBase
             }
             catch (FormatException ex)
             {
-                if (LoadExistingReleasesFailed != null)
-                    await LoadExistingReleasesFailed(this, ex);
+                if (LoadReleaseFailed != null)
+                    await LoadReleaseFailed(this, new LoadReleaseFailedArgs {
+                        ex = new Exception(
+                            $"Can't deduce version from folder name. " +
+                            $"Please use a valid semantic version as the folder name if you're manually installing.\n" +
+                            $"{ex.Message}",
+                            ex
+                        ),
+                        path = directory
+                    });
 
                 version = null;
             }
 
-            ExistingVersions.Add(new ExistingVersionVM { Path = directory, ReleaseVersion = version });
+
+            ExistingVersionVM existingVersionVM = new() { FolderPath = directory, ReleaseVersion = version };
+            existingVersionVM.LaunchFailed += OnLaunchFailed;
+            existingVersionVM.Launched += OnLaunched;
+
+            ExistingVersions.Add(existingVersionVM);
         }
+    }
+
+    public event AsyncEventHandler<Exception>? LaunchFailed;
+    private async Task OnLaunchFailed(object? sender, Exception e)
+    {
+        if (LaunchFailed != null) await LaunchFailed(this, e);
+    }
+
+    public event AsyncEventHandler<object>? Launched;
+    private async Task OnLaunched(object? sender, object e)
+    {
+        if (Launched != null) await Launched(this, e);
+    }
+
+
+    public void Delete(ExistingVersionVM vm)
+    {
+        vm.Delete();
+        ExistingVersions.Remove(vm);
+    }
+}
+
+
+public partial class MainVMDesign : MainVM
+{
+    public MainVMDesign() : base()
+    {
+        ExistingVersions.Add(new ExistingVersionVM());
     }
 }

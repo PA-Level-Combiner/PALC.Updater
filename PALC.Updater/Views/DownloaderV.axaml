@@ -13,7 +13,9 @@
 		x:DataType="vm:DownloaderVM"
 
         Title="Download Versions?"
-		Width="480" Height="640">
+		Width="480" Height="640"
+		
+		Loaded="OnLoaded">
 
 	<Design.DataContext>
 		<vm:DownloaderVMDesign/>
@@ -21,8 +23,8 @@
 
 	<Grid RowDefinitions="*, 5*, *">
 		<TextBlock Grid.Row="0"
-				   Classes="h1"
-				   Text="DOWNLOAD NEW VERSIONS"/>
+				   Classes="title"
+				   Text="DOWNLOAD VERSIONS"/>
 
 		<ScrollViewer Grid.Row="1"
 					  VerticalScrollBarVisibility="Visible">
@@ -33,17 +35,25 @@
 						<Expander>
 							<Expander.Header>
 								<TextBlock TextAlignment="Left"
-										   Text="{Binding ReleaseVersion}"/>
+										   Text="{Binding ReleaseVersion, TargetNullValue=Unknown Version}"/>
 							</Expander.Header>
 
 							<Expander.Content>
-								<Grid RowDefinitions="Auto, 0.5*">
-									<Border BorderThickness="2"
+								<Grid RowDefinitions="*, Auto, 0.5*">
+									<TextBlock Grid.Row="0"
+											   Classes="h1"
+											   Text="{Binding Name}"/>
+									<Border Grid.Row="1"
+											BorderThickness="2"
 											BorderBrush="Black">
 										<md:MarkdownScrollViewer Grid.Row="0"
 																 Markdown="{Binding ReleaseNotes}" />
-										
 									</Border>
+									
+									<Button Grid.Row="2"
+											Classes="primary"
+											Content="Download This Version"
+											Click="OnDownload"/>
 								</Grid>
 							</Expander.Content>
 						</Expander>
@@ -54,14 +64,22 @@
 		</ScrollViewer>
 
 		<Grid Grid.Row="2"
-			  ColumnDefinitions="*, *">
+			  RowDefinitions="*, *">
 			<Button Grid.Column="0"
+						Content="Refresh"
+						Click="OnRefresh"/>
+					
+			<Grid Grid.Row="1"
+				  ColumnDefinitions="*, *">
+				<Button Grid.Column="0"
 					Classes="primary"
-					Content="Finished"/>
-			<Button Grid.Column="1"
-					Classes="secondary"
-					Content="Open releases page..."/>
+					Content="Close"
+					Click="OnClose"/>
+				<Button Grid.Column="1"
+						Classes="secondary"
+						Content="Open releases page..."
+						Click="OnOpenReleasesPage"/>
+			</Grid>
 		</Grid>
-		
 	</Grid>
 </Window>
