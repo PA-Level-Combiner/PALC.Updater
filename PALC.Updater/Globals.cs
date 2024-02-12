@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Octokit;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -14,4 +15,6 @@ public static class Globals
     public static readonly string exeName = "PALC.Main.Desktop.exe";
 
     public static readonly string releaseFileToDownload = "PALC.Desktop.zip";
+
+    public static readonly GitHubClient client = new(new ProductHeaderValue(userAgent));
 }

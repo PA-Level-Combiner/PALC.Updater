@@ -62,24 +62,17 @@
 			</ListBox>
 
 		</ScrollViewer>
-
-		<Grid Grid.Row="2"
-			  RowDefinitions="*, *">
-			<Button Grid.Column="0"
-						Content="Refresh"
-						Click="OnRefresh"/>
 					
-			<Grid Grid.Row="1"
-				  ColumnDefinitions="*, *">
-				<Button Grid.Column="0"
-					Classes="primary"
-					Content="Close"
-					Click="OnClose"/>
-				<Button Grid.Column="1"
-						Classes="secondary"
-						Content="Open releases page..."
-						Click="OnOpenReleasesPage"/>
-			</Grid>
+		<Grid Grid.Row="2"
+				ColumnDefinitions="*, *">
+			<Button Grid.Column="0"
+				Classes="primary"
+				Content="Close"
+				Click="OnClose"/>
+			<Button Grid.Column="1"
+					Classes="secondary"
+					Content="Open releases page..."
+					Click="OnOpenReleasesPage"/>
 		</Grid>
 	</Grid>
 </Window>

@@ -2,6 +2,7 @@
 using System;
 using System.Collections.ObjectModel;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace PALC.Updater.ViewModels;
@@ -82,6 +83,14 @@ public partial class MainVM : ViewModelBase
     private async Task OnLaunched(object? sender, object e)
     {
         if (Launched != null) await Launched(this, e);
+    }
+
+
+    public async Task CheckNewUpdates()
+    {
+        var existingHighest = ExistingVersions.MaxBy(x => x.ReleaseVersion ?? new SemVersion(0, 0, 0));
+
+
     }
 
 

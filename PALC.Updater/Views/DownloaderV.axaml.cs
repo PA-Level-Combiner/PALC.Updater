@@ -56,16 +56,6 @@ public partial class DownloaderV : Window
         display.Close();
     }
 
-    public async void OnRefresh(object? sender, RoutedEventArgs e)
-    {
-        await Refresh();
-        await MessageBoxManager.GetMessageBoxStandard(
-            "Heya!",
-            "Note that if you refresh too fast, Github may rate-limit you and prevent you from refreshing for 10 minutes.\n" +
-            "This message helps you to not do that."
-        ).ShowWindowDialogAsync(this);
-    }
-
     public async void OnClose(object? sender, RoutedEventArgs e)
         => await Dispatcher.UIThread.InvokeAsync(Close);
 
@@ -104,7 +94,8 @@ public partial class DownloaderV : Window
         {
             var result = await MessageBoxManager.GetMessageBoxStandard(
                 "Repeat Download?",
-                "This version has already been download. This would overwrite the old version if you've done modifications to it.\n" +
+                "This version has already been downloaded. " +
+                "This would overwrite the old version if you've done modifications to it.\n" +
                 "Do you want to download it again?",
                 MsBox.Avalonia.Enums.ButtonEnum.YesNo,
                 MsBox.Avalonia.Enums.Icon.Info

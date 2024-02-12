@@ -12,8 +12,6 @@ namespace PALC.Updater.ViewModels;
 
 public partial class DownloaderVM : ViewModelBase
 {
-    private static readonly GitHubClient client = new(new ProductHeaderValue(Globals.userAgent));
-
     public MainVM? mainVM;
 
     public bool IsReleaseExisting(SemVersion semVersion)
@@ -33,10 +31,20 @@ public partial class DownloaderVM : ViewModelBase
     public event AsyncEventHandler<Exception>? GetReleasesFromRepoFailed;
     public event AsyncEventHandler<Exception>? StringToSemverFailed;
 
-    public event AsyncEventHandler? EndLoad;
+    public event AsyncEventHandler? LoadReleasesfinished;
 
+    private static ObservableCollection<GithubReleaseVM>? _githubReleasesCache = null;
     public async Task LoadReleases()
     {
+        if (_githubReleasesCache != null)
+        {
+            foreach (var item in _githubReleasesCache)
+                GithubReleases.Add(item);
+
+            return;
+        }
+
+
         GithubReleases.Clear();
 
         try
@@ -44,7 +52,7 @@ public partial class DownloaderVM : ViewModelBase
             IReadOnlyList<Release> releases;
             try
             {
-                releases = await client.Repository.Release.GetAll(GithubInfo.owner, GithubInfo.mainName);
+                releases = await Globals.client.Repository.Release.GetAll(GithubInfo.owner, GithubInfo.mainName);
             }
             catch (Exception ex)
             {
@@ -87,8 +95,10 @@ public partial class DownloaderVM : ViewModelBase
         }
         finally
         {
-            if (EndLoad != null) await EndLoad(this, new EventArgs());
+            if (LoadReleasesfinished != null) await LoadReleasesfinished(this, new EventArgs());
         }
+
+        _githubReleasesCache = GithubReleases;
     }
 
     public event AsyncEventHandler<object?>? DownloadFinished;
