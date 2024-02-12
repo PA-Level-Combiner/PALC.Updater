@@ -89,13 +89,11 @@ public partial class DownloaderV : Window
 
 
 
-        Window display = new() { Content = "Downloading...", SizeToContent = SizeToContent.WidthAndHeight };
-        IsEnabled = false;
-        display.Show();
+        var display = MessageBoxTools.CreateProgressModalDialog("Downloading...");
+        display.ShowFromWindow(this);
 
         await grvm.Download();
 
-        display.Close();
-        IsEnabled = true;
+        display.CloseFromWindow(this);
     }
 }

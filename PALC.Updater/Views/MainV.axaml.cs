@@ -109,16 +109,14 @@ public partial class MainV : Window
     public async Task RefreshVersionList()
     {
         // TODO make it more formal
-        Window display = new() { Content = "Refreshing version list...", SizeToContent = SizeToContent.WidthAndHeight };
+        var display = MessageBoxTools.CreateProgressModalDialog("Refreshing version list...");
 
-        display.Show();
-        IsEnabled = false;
+        display.ShowFromWindow(this);
         await Task.Delay(1000);
 
         await vm.LoadExistingReleases();
 
-        IsEnabled = true;
-        display.Close();
+        display.CloseFromWindow(this);
     }
 
 

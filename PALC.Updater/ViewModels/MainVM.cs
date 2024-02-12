@@ -74,6 +74,11 @@ public partial class MainVM : ViewModelBase
 
             ExistingVersions.Add(existingVersionVM);
         }
+
+        var sorted = ExistingVersions.ToList().OrderByDescending(x => x.ReleaseVersion);
+        ExistingVersions.Clear();
+        foreach (var item in sorted)
+            ExistingVersions.Add(item);
     }
 
     public event AsyncEventHandler<Exception>? LaunchFailed;

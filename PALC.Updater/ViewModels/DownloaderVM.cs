@@ -29,7 +29,14 @@ public partial class DownloaderVM : ViewModelBase
 
     public void PopulateGithubReleases(IEnumerable<GithubReleaseVM> githubReleases)
     {
-        List<GithubReleaseVM> copy = githubReleases.ToList();
+        List<GithubReleaseVM> copy = githubReleases.ToList().ConvertAll(x => new GithubReleaseVM {
+            githubRelease = x.githubRelease,
+            Url = x.Url,
+            ReleaseVersion = x.ReleaseVersion,
+            ReleaseNotes = x.ReleaseNotes,
+            Name = x.Name,
+            CreatedAt = x.CreatedAt
+        });
         foreach (var githubRelease in copy)
         {
             githubRelease.DownloadFinished += OnDownloadFinished;
