@@ -28,7 +28,6 @@ public partial class MainVM : ViewModelBase
 
     public async Task LoadExistingReleases()
     {
-        throw new Exception("test");
         _logger.Info("Loading existing releases...");
         ExistingVersions.Clear();
 

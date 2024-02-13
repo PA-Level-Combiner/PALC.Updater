@@ -25,5 +25,5 @@ public static class Globals
     public static readonly string githubIssuesLink = $"{githubLink}/issues";
     public static readonly string githubReleasesLink = "${githubLink}/releases";
 
-    public static readonly string logsPath = $"{AppDomain.CurrentDomain.BaseDirectory}logs";
+    public static readonly string logsPath = $"{AppDomain.CurrentDomain.BaseDirectory}Logs";
 }
