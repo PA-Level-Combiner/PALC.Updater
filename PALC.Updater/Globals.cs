@@ -17,4 +17,13 @@ public static class Globals
     public static readonly string releaseFileToDownload = "PALC.Desktop.zip";
 
     public static readonly GitHubClient client = new(new ProductHeaderValue(userAgent));
+
+
+    public static readonly string programName = "PALC Updater";
+
+    public static readonly string githubLink = @"https://github.com/PA-Level-Combiner/PALC.Updater";
+    public static readonly string githubIssuesLink = $"{githubLink}/issues";
+    public static readonly string githubReleasesLink = "${githubLink}/releases";
+
+    public static readonly string logsPath = $"{AppDomain.CurrentDomain.BaseDirectory}logs";
 }

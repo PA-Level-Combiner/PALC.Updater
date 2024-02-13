@@ -5,6 +5,9 @@
 		<LangVersion>latest</LangVersion>
 		<AvaloniaUseCompiledBindingsByDefault>true</AvaloniaUseCompiledBindingsByDefault>
 		<Configurations>Debug;Release;Reload Designer</Configurations>
+
+		<VersionPrefix>1.0.0</VersionPrefix>
+		<VersionSuffix>alpha.1</VersionSuffix>
 	</PropertyGroup>
 
 
@@ -25,16 +28,24 @@
 		</PackageReference>
 		<PackageReference Include="Markdown.Avalonia" Version="11.0.2" />
 		<PackageReference Include="MessageBox.Avalonia" Version="3.1.5.1" />
+		<PackageReference Include="NLog" Version="5.2.8" />
 		<PackageReference Include="Octokit" Version="9.1.2" />
 	</ItemGroup>
 
 	<ItemGroup>
 	  <ProjectReference Include="..\PALC.Common\PALC.Common\PALC.Common.csproj" />
+	  <ProjectReference Include="..\PALC.CrashHandler\PALC.CrashHandler.csproj" />
 	</ItemGroup>
 
 	<ItemGroup>
 	  <Compile Update="Views\MainV.axaml.cs">
 	    <DependentUpon>MainV.axaml</DependentUpon>
 	  </Compile>
+	</ItemGroup>
+
+	<ItemGroup>
+	  <None Update="NLog.config">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
 	</ItemGroup>
 </Project>

@@ -49,12 +49,9 @@ public partial class DownloaderV : Window
             await vm.mainVM.LoadExistingReleases();
     }
 
-    private async Task OnDownloadFailed(object? sender, Exception e)
+    private async Task OnDownloadFailed(object? sender, DisplayGeneralErrorArgs e)
     {
-        await MessageBoxTools.CreateErrorMsgBox(
-            "An error occurred while trying to download necessary files.",
-            e
-        ).ShowWindowDialogAsync(this);
+        await MessageBoxTools.CreateErrorMsgBox(e).ShowWindowDialogAsync(this);
     }
 
     public async void OnDownload(object? sender, RoutedEventArgs e)

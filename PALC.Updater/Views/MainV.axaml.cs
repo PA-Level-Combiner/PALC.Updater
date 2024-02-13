@@ -27,6 +27,8 @@ public partial class MainV : Window
         vm.Launched += OnProgramLaunched;
 
         vm.LoadGithubFailed += OnLoadGithubFailed;
+
+        vm.DeleteFailed += OnDeleteFailed;
     }
 
 
@@ -48,12 +50,9 @@ public partial class MainV : Window
         }
     }
 
-    private async Task OnLoadGithubFailed(object? sender, Exception e)
+    private async Task OnLoadGithubFailed(object? sender, DisplayGeneralErrorArgs e)
     {
-        await MessageBoxTools.CreateErrorMsgBox(
-            $"An error occurred while trying to get releases from Github.",
-            e
-        ).ShowWindowDialogAsync(this);
+        await MessageBoxTools.CreateErrorMsgBox(e).ShowWindowDialogAsync(this);
     }
 
 
@@ -64,25 +63,24 @@ public partial class MainV : Window
         return Task.CompletedTask;
     }
 
-    private async Task OnLaunchFailed(object? sender, Exception e)
+    private async Task OnLaunchFailed(object? sender, DisplayGeneralErrorArgs e)
     {
-        await MessageBoxTools.CreateErrorMsgBox(
-            $"An error occured while trying to launch PALC.",
-            e
-        ).ShowWindowDialogAsync(this);
+        await MessageBoxTools.CreateErrorMsgBox(e).ShowWindowDialogAsync(this);
     }
 
 
 
-    private async Task OnLoadExistingFailed(object? sender, LoadReleaseFailedArgs e)
+    private async Task OnLoadExistingFailed(object? sender, DisplayGeneralErrorArgs e)
     {
-        await MessageBoxTools.CreateErrorMsgBox(
-            $"An error occured while trying to open the release in folder {e.path}.",
-            e.ex
-        ).ShowWindowDialogAsync(this);
+        await MessageBoxTools.CreateErrorMsgBox(e).ShowWindowDialogAsync(this);
     }
 
 
+
+    private async Task OnDeleteFailed(object? sender, DisplayGeneralErrorArgs e)
+    {
+        await MessageBoxTools.CreateErrorMsgBox(e).ShowWindowDialogAsync(this);
+    }
 
     public async void OnDelete(object? sender, RoutedEventArgs e)
     {
@@ -96,7 +94,7 @@ public partial class MainV : Window
             MsBox.Avalonia.Enums.Icon.Info
         ).ShowWindowDialogAsync(this);
 
-        if (result == MsBox.Avalonia.Enums.ButtonResult.Yes) vm.Delete(existingVersionsVM);
+        if (result == MsBox.Avalonia.Enums.ButtonResult.Yes) vm.DeleteExistingVersion(existingVersionsVM);
     }
 
 

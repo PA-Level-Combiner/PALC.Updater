@@ -51,8 +51,8 @@ public partial class DownloaderVM : ViewModelBase
         if (DownloadFinished != null) await DownloadFinished(sender, e);
     }
 
-    public event AsyncEventHandler<Exception>? DownloadFailed;
-    private async Task OnDownloadFailed(object? sender, Exception e)
+    public event AsyncEventHandler<DisplayGeneralErrorArgs>? DownloadFailed;
+    private async Task OnDownloadFailed(object? sender, DisplayGeneralErrorArgs e)
     {
         if (DownloadFailed != null) await DownloadFailed(sender, e);
     }
