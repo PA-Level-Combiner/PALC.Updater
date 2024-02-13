@@ -24,7 +24,7 @@ class Program
 
             List<string> crashArgs = new() {
                 Globals.programName,
-                ProgramInfo.programVersion,
+                ProgramInfo.GetProgramVersion()?.ToString() ?? "Unknown version",
                 Globals.logsPath,
                 Globals.githubIssuesLink,
                 ex.Message,
