@@ -45,7 +45,7 @@ public partial class GithubReleaseVM : ViewModelBase
         _logger.Trace("Creating request...");
         var req = new HttpRequestMessage()
         {
-            RequestUri = new Uri(new Uri(GithubInfo.mainReleases), $"download/{githubRelease.TagName}/{Globals.releaseFileToDownload}"),
+            RequestUri = new Uri(new Uri(GithubInfo.main.Releases), $"download/{githubRelease.TagName}/{Globals.releaseFileToDownload}"),
             Method = HttpMethod.Get
         };
         req.Headers.Add("User-Agent", Globals.releaseFileToDownload);
@@ -97,8 +97,7 @@ public partial class GithubReleaseVM : ViewModelBase
         {
             _logger.Error(ex, "Cannot write to zip at {zipPath}.", zipPath);
             await AEHHelper.RunAEH(DownloadFailed, this, new(
-                $"The program doesn't have access to the extracted zip.\n" +
-                AdditionalErrors.noAccessHelp,
+                $"The program doesn't have access to the extracted zip.\n",
                 ex
             ));
 
@@ -130,8 +129,7 @@ public partial class GithubReleaseVM : ViewModelBase
         {
             _logger.Error(ex, "Cannot extract to directory {directory}.", folderPath);
             await AEHHelper.RunAEH(DownloadFailed, this, new(
-                $"The program doesn't have access to the folder \"{folderPath}\" and can't extract to this folder.\n" +
-                AdditionalErrors.noAccessHelp,
+                $"The program doesn't have access to the folder \"{folderPath}\" and can't extract to this folder.\n",
                 ex
             ));
 
@@ -161,8 +159,7 @@ public partial class GithubReleaseVM : ViewModelBase
         {
             _logger.Error(ex, "Cannot delete zip {zipPath}.", zipPath);
             await AEHHelper.RunAEH(DownloadFailed, this, new(
-                $"The program can't delete the zip at \"{zipPath}\".\n" +
-                AdditionalErrors.noAccessHelp + "\n" +
+                $"The program can't delete the zip at \"{zipPath}\".\n\n" +
                 $"The release is still downloaded, just extract it to a folder named \"{githubRelease.TagName}\" inside \"{Globals.versionsFolder}\".",
                 ex
             ));

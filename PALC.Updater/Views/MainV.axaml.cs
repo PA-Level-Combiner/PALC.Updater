@@ -8,6 +8,8 @@ using Avalonia.Interactivity;
 using CommunityToolkit.Mvvm.Input;
 using System;
 using MsBox.Avalonia;
+using Semver;
+using System.Diagnostics;
 
 namespace PALC.Updater.Views;
 
@@ -38,6 +40,23 @@ public partial class MainV : Window
 
         await vm.LoadGithubReleases();
         if (!vm.isGithubReleasesLoaded) return;
+
+        SemVersion? version = await vm.HasUpdaterUpdate();
+        if (version != null)
+        {
+            var result = await MessageBoxManager.GetMessageBoxStandard(
+                "New update!",
+                $"A new UPDATER update has been released: {version}\n" +
+                $"\n" +
+                $"Would you like to visit the download page now?",
+                MsBox.Avalonia.Enums.ButtonEnum.YesNo,
+                MsBox.Avalonia.Enums.Icon.Info
+            ).ShowWindowDialogAsync(this);
+
+            if (result == MsBox.Avalonia.Enums.ButtonResult.Yes)
+                Process.Start(new ProcessStartInfo(GithubInfo.updater.url) { UseShellExecute = true });
+        }
+
 
         if (vm.HasNewUpdates())
         {

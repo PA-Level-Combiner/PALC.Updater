@@ -32,14 +32,15 @@
 					<DataTemplate DataType="{x:Type vm:GithubReleaseVM}">
 						<Expander>
 							<Expander.Header>
-								<TextBlock TextAlignment="Left"
+								<TextBlock Classes="primary"
+										   TextAlignment="Left"
 										   Text="{Binding ReleaseVersion, TargetNullValue=Unknown Version}"/>
 							</Expander.Header>
 
 							<Expander.Content>
 								<Grid RowDefinitions="*, Auto, 0.5*">
 									<TextBlock Grid.Row="0"
-											   Classes="h1"
+											   Classes="h1 primary"
 											   Text="{Binding Name}"/>
 									<Border Grid.Row="1"
 											BorderThickness="2"
@@ -49,7 +50,7 @@
 									</Border>
 									
 									<Button Grid.Row="2"
-											Classes="primary"
+											Classes="success"
 											Content="Download This Version"
 											Click="OnDownload"/>
 								</Grid>
@@ -64,7 +65,7 @@
 		<Grid Grid.Row="2"
 				ColumnDefinitions="*, *">
 			<Button Grid.Column="0"
-				Classes="primary"
+				Classes="danger"
 				Content="Close"
 				Click="OnClose"/>
 			<Button Grid.Column="1"

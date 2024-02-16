@@ -4,6 +4,6 @@
 			 RequestedThemeVariant="Light">
 
     <Application.Styles>
-        <StyleInclude Source="avares://PALC.Common/Styles/Styles.axaml"/>
+        <StyleInclude Source="avares://PALC.Common/Views/Styles/Styles.axaml"/>
     </Application.Styles>
 </Application>

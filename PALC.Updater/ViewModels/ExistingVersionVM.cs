@@ -68,8 +68,7 @@ public partial class ExistingVersionVM : ViewModelBase
         {
             _logger.Error("Cannot access files in {folderPath}.", FolderPath);
             await AEHHelper.RunAEH(DeleteFailed, this, new(
-                $"The program cannot access the folder \"{FolderPath}\".\n" +
-                AdditionalErrors.noAccessHelp,
+                $"The program cannot access the folder \"{FolderPath}\".\n",
                 ex
             ));
             return;

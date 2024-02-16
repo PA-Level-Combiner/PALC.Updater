@@ -44,23 +44,24 @@
 						<Expander>
 							<Expander.Header>
 								<TextBlock TextAlignment="Left"
+										   Classes="primary"
 										   Text="{Binding ReleaseVersion, TargetNullValue=Unknown Version}" />
 							</Expander.Header>
 
 							<Expander.Content>
 								<Grid RowDefinitions="*, 2*">
 									<TextBlock Grid.Row="0"
-											   Classes="caption"
+											   Classes="caption primary"
 											   Text="{Binding FolderPath}"/>
 
 									<Grid Grid.Row="1"
 										  ColumnDefinitions="*, 2*">
 										<Button Grid.Column="0"
-												Classes="secondary"
+												Classes="danger"
 												Content="Delete"
 												Click="OnDelete"/>
 										<Button Grid.Column="1"
-												Classes="primary"
+												Classes="success"
 												Content="Launch"
 												Command="{Binding LaunchCommand}"/>
 									</Grid>
@@ -83,7 +84,7 @@
 			  ColumnDefinitions="2*, *">
 			<Button Grid.Column="0"
 					IsEnabled="{Binding IsGithubReleasesLoaded, Mode=TwoWay}"
-					Classes="primary"
+					Classes="success"
 					Content="Download Versions"
 					Click="OnDownloadVersions"/>
 

@@ -33,7 +33,7 @@ public partial class DownloaderV : Window
 
 
     public async void OnOpenReleasesPage(object? sender, RoutedEventArgs e)
-        => await Task.Run(() => Process.Start(new ProcessStartInfo(GithubInfo.mainReleases) { UseShellExecute = true }));
+        => await Task.Run(() => Process.Start(new ProcessStartInfo(GithubInfo.main.Releases) { UseShellExecute = true }));
 
 
 

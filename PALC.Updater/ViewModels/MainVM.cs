@@ -57,7 +57,7 @@ public partial class MainVM : ViewModelBase
             await AEHHelper.RunAEH(
                 LoadExistingFailed, this,
                 new(
-                    $"Can't access the version folder {Globals.versionsFolder}. " + AdditionalErrors.noAccessHelp,
+                    $"Can't access the version folder {Globals.versionsFolder}. ",
                     ex
                 )
             );
@@ -159,11 +159,11 @@ public partial class MainVM : ViewModelBase
         IReadOnlyList<Release> releases;
         try
         {
-            releases = await Globals.client.Repository.Release.GetAll(GithubInfo.owner, GithubInfo.mainName);
+            releases = await Globals.client.Repository.Release.GetAll(GithubInfo.owner, GithubInfo.main.name);
         }
         catch (ApiException ex)
         {
-            _logger.Error(ex, "Failed to get releases from {owner} / {name}.", GithubInfo.owner, GithubInfo.mainName);
+            _logger.Error(ex, "Failed to get releases from {owner} / {name}.", GithubInfo.owner, GithubInfo.main.name);
             await AEHHelper.RunAEH(LoadGithubFailed, this, new("Failed to get releases.", ex));
             return;
         }
@@ -235,6 +235,59 @@ public partial class MainVM : ViewModelBase
     private async Task OnDeleteFailed(object? sender, DisplayGeneralErrorArgs e)
     {
         await AEHHelper.RunAEH(DeleteFailed, this, e);
+    }
+
+
+
+    public event AsyncEventHandler<DisplayGeneralErrorArgs>? LoadGithubUpdaterFailed;
+
+    // lol
+    public async Task<SemVersion?> HasUpdaterUpdate()
+    {
+        _logger.Info("Checking for new updater updates...");
+
+        IReadOnlyList<Release> releases;
+        try
+        {
+            releases = await Globals.client.Repository.Release.GetAll(GithubInfo.owner, GithubInfo.updater.name);
+        }
+        catch (ApiException ex)
+        {
+            _logger.Error(ex, "Failed to get releases from {owner} / {name}.", GithubInfo.owner, GithubInfo.updater.name);
+            await AEHHelper.RunAEH(LoadGithubUpdaterFailed, this, new("Failed to get updater releases.", ex));
+            return null;
+        }
+
+        SemVersion? highest = releases.Select(x => {
+            try
+            {
+                return SemVersion.Parse(x.TagName, SemVersionStyles.Any);
+            }
+            catch (FormatException)
+            {
+                return null;
+            }
+        }).Max();
+        if (highest == null)
+        {
+            _logger.Warn("No updater releases detected.");
+            await AEHHelper.RunAEH(LoadGithubUpdaterFailed, this, new("No updater releases detected.", null));
+            return null;
+        }
+
+        SemVersion? current = ProgramInfo.GetProgramVersion();
+        if (current == null)
+        {
+            _logger.Warn("Cannot detect updater version.");
+            await AEHHelper.RunAEH(LoadGithubUpdaterFailed, this, new("Cannot detect the updater's version.", null));
+            return null;
+        }
+
+
+        if (highest.CompareSortOrderTo(current) == 1)
+            return highest;
+        else
+            return null;
     }
 }
 
