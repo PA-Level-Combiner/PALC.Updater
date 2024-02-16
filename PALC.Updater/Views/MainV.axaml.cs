@@ -23,15 +23,20 @@ public partial class MainV : Window
         vm = new();
         DataContext = vm;
 
-        vm.LoadExistingFailed += OnLoadExistingFailed;
+        vm.LoadExistingFailed += OnDisplayGeneralError;
 
-        vm.LaunchFailed += OnLaunchFailed;
+        vm.LaunchFailed += OnDisplayGeneralError;
         vm.Launched += OnProgramLaunched;
 
-        vm.LoadGithubFailed += OnLoadGithubFailed;
+        vm.LoadGithubFailed += OnDisplayGeneralError;
+        vm.LoadGithubUpdaterFailed += OnDisplayGeneralError;
 
-        vm.DeleteFailed += OnDeleteFailed;
+        vm.DeleteFailed += OnDisplayGeneralError;
     }
+
+
+    private async Task OnDisplayGeneralError(object? sender, DisplayGeneralErrorArgs e)
+        => await MessageBoxTools.CreateErrorMsgBox(e).ShowWindowDialogAsync(this);
 
 
     public async void OnLoaded(object? sender, RoutedEventArgs e)
@@ -41,7 +46,7 @@ public partial class MainV : Window
         await vm.LoadGithubReleases();
         if (!vm.isGithubReleasesLoaded) return;
 
-        SemVersion? version = await vm.HasUpdaterUpdate();
+        SemVersion? version = await vm.GetNewerUpdaterVersion();
         if (version != null)
         {
             var result = await MessageBoxManager.GetMessageBoxStandard(
@@ -54,7 +59,7 @@ public partial class MainV : Window
             ).ShowWindowDialogAsync(this);
 
             if (result == MsBox.Avalonia.Enums.ButtonResult.Yes)
-                Process.Start(new ProcessStartInfo(GithubInfo.updater.url) { UseShellExecute = true });
+                Process.Start(new ProcessStartInfo(GithubInfo.updater.Releases) { UseShellExecute = true });
         }
 
 
@@ -69,10 +74,7 @@ public partial class MainV : Window
         }
     }
 
-    private async Task OnLoadGithubFailed(object? sender, DisplayGeneralErrorArgs e)
-    {
-        await MessageBoxTools.CreateErrorMsgBox(e).ShowWindowDialogAsync(this);
-    }
+    
 
 
 
@@ -82,24 +84,6 @@ public partial class MainV : Window
         return Task.CompletedTask;
     }
 
-    private async Task OnLaunchFailed(object? sender, DisplayGeneralErrorArgs e)
-    {
-        await MessageBoxTools.CreateErrorMsgBox(e).ShowWindowDialogAsync(this);
-    }
-
-
-
-    private async Task OnLoadExistingFailed(object? sender, DisplayGeneralErrorArgs e)
-    {
-        await MessageBoxTools.CreateErrorMsgBox(e).ShowWindowDialogAsync(this);
-    }
-
-
-
-    private async Task OnDeleteFailed(object? sender, DisplayGeneralErrorArgs e)
-    {
-        await MessageBoxTools.CreateErrorMsgBox(e).ShowWindowDialogAsync(this);
-    }
 
     public async void OnDelete(object? sender, RoutedEventArgs e)
     {

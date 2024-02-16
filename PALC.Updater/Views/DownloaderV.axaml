@@ -70,7 +70,7 @@
 				Click="OnClose"/>
 			<Button Grid.Column="1"
 					Classes="secondary"
-					Content="Open releases page..."
+					Content="Open releases page"
 					Click="OnOpenReleasesPage"/>
 		</Grid>
 	</Grid>

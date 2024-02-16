@@ -242,7 +242,7 @@ public partial class MainVM : ViewModelBase
     public event AsyncEventHandler<DisplayGeneralErrorArgs>? LoadGithubUpdaterFailed;
 
     // lol
-    public async Task<SemVersion?> HasUpdaterUpdate()
+    public async Task<SemVersion?> GetNewerUpdaterVersion()
     {
         _logger.Info("Checking for new updater updates...");
 
@@ -258,7 +258,7 @@ public partial class MainVM : ViewModelBase
             return null;
         }
 
-        SemVersion? highest = releases.Select(x => {
+        SemVersion? latest = releases.Select(x => {
             try
             {
                 return SemVersion.Parse(x.TagName, SemVersionStyles.Any);
@@ -268,7 +268,7 @@ public partial class MainVM : ViewModelBase
                 return null;
             }
         }).Max();
-        if (highest == null)
+        if (latest == null)
         {
             _logger.Warn("No updater releases detected.");
             await AEHHelper.RunAEH(LoadGithubUpdaterFailed, this, new("No updater releases detected.", null));
@@ -278,16 +278,24 @@ public partial class MainVM : ViewModelBase
         SemVersion? current = ProgramInfo.GetProgramVersion();
         if (current == null)
         {
-            _logger.Warn("Cannot detect updater version.");
+            _logger.Warn("Cannot detect current version.");
             await AEHHelper.RunAEH(LoadGithubUpdaterFailed, this, new("Cannot detect the updater's version.", null));
             return null;
         }
 
 
-        if (highest.CompareSortOrderTo(current) == 1)
-            return highest;
+        _logger.Info("Github latest: {githubLatest}, Current: {current}", latest.ToString(), current.ToString());
+
+        if (latest.CompareSortOrderTo(current) == 1)
+        {
+            _logger.Info("New update detected.");
+            return latest;
+        }
         else
+        {
+            _logger.Info("No new update detected.");
             return null;
+        }
     }
 }
 
