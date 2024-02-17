@@ -12,6 +12,6 @@
 	</Application.Styles>
 
 	<Application.Resources>
-		<global:ProgramInfo x:Key="prog" />
+		<global:ProgramInfo x:Key="ProgramInfo" />
 	</Application.Resources>
 </Application>

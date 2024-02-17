@@ -32,7 +32,7 @@
 				   Source="avares://PALC.Common/Assets/palc_icon.ico"/>
 
 			<controls:TitleText x:DataType="ver:ProgramInfo"
-								DataContext="{DynamicResource prog}"
+								DataContext="{DynamicResource ProgramInfo}"
 								Grid.Column="1"
 								Title="PALC UPDATER"
 								Ver="{Binding ProgramVersion}" />
