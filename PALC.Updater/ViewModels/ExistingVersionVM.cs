@@ -30,7 +30,7 @@ public partial class ExistingVersionVM : ViewModelBase
 
         try
         {
-            Process.Start(new ProcessStartInfo(exePath));
+            Process.Start(new ProcessStartInfo(exePath, "--launchedFromUpdater"));
         }
         catch (Exception ex)
         {
