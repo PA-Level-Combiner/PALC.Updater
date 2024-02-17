@@ -6,6 +6,8 @@
 		
 		xmlns:v="using:PALC.Updater.Views"
 		xmlns:vm="using:PALC.Updater.ViewModels"
+		xmlns:controls="using:PALC.Common.Views.Templates"
+		xmlns:ver="using:PALC"
 
         x:Class="PALC.Updater.Views.MainV"
 		x:DataType="vm:MainVM"
@@ -16,20 +18,26 @@
 		
 		Loaded="OnLoaded">
 
+
 	<Design.DataContext>
 		<vm:MainVMDesign />
 	</Design.DataContext>
 
 	<Grid RowDefinitions="*, Auto, 4*, Auto, 0.75*">
 		<Grid Grid.Row="0"
-			  Margin="10"
+			  Margin=""
 			  HorizontalAlignment="Center"
-			  ColumnDefinitions="Auto, Auto">
+			  ColumnDefinitions="Auto, *">
 			<Image Grid.Column="0"
 				   Source="avares://PALC.Common/Assets/palc_icon.ico"/>
-			<TextBlock Grid.Column="1"
-					   Classes="title"
-					   Text="PALC Updater"/>
+
+			<controls:TitleText x:DataType="ver:ProgramInfo"
+								DataContext="{DynamicResource prog}"
+								Grid.Column="1"
+								Title="PALC UPDATER"
+								Ver="{Binding ProgramVersion}" />
+			
+			
 		</Grid>
 		
 		

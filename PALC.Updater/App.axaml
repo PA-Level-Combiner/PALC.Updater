@@ -1,9 +1,17 @@
 <Application xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              x:Class="PALC.Updater.App"
+			 
+			 xmlns:global="using:PALC"
 			 RequestedThemeVariant="Light">
 
     <Application.Styles>
         <StyleInclude Source="avares://PALC.Common/Views/Styles/Styles.axaml"/>
-    </Application.Styles>
+
+		<StyleInclude Source="avares://PALC.Common/Views/Templates/Templates.axaml"/>
+	</Application.Styles>
+
+	<Application.Resources>
+		<global:ProgramInfo x:Key="prog" />
+	</Application.Resources>
 </Application>
